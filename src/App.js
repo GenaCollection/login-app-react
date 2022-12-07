@@ -1,24 +1,40 @@
-import logo from './logo.svg';
-import './App.css';
+import Header from "./components/Header";
+import React, { useContext, useEffect, useState } from "react";
+import { v4 as uuidv4 } from "uuid";
+import { newContext } from "./components/context";
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+  const [data, setData] = useState([]);
+  const { state } = useContext(newContext);
+  useEffect(() => {
+    fetch("https://jsonplaceholder.typicode.com/posts")
+      .then((data) => data.json())
+      .then((res) => setData(res));
+  }, []);
+  let titleStyle = {
+    display: "none",
+  };
+  const styleChange = (e) => {
+    e.target.nextSibling.style = titleStyle;
+  };
+  const showContent = (
+    <div>
+      {data.map((obj) => {
+        return (
+          <span key={uuidv4()}>
+            <p onClick={styleChange}>Title: {obj.title}</p>
+            <p style={titleStyle}>Post: {obj.body}</p>
+          </span>
+        );
+      })}
     </div>
+  );
+
+  return (
+    <>
+      <Header />
+      {state ? showContent : <></>}
+    </>
   );
 }
 
